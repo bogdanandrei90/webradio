@@ -5,7 +5,7 @@ Designed with a clean interface and Day / Night mode for comfortable listening a
 Minimal UI with custom stream input, presets, volume control, and day/night toggle.
 
 
-✨ Features
+** Features**
 ▶️ Play / ⏸ Pause live radio streams
 🔗 Paste any radio stream URL
 🔊 Volume control
@@ -14,7 +14,7 @@ Minimal UI with custom stream input, presets, volume control, and day/night togg
 📱 Installable on mobile (PWA-style)
 🚫 No App Store required
 ⚡ Fast, lightweight, no tracking
-📻 Included Presets
+** Included Presets**
 🇪🇸 MegaStar FM — Pop
 🇷🇴 Dance FM — Dance
 🇬🇷 Off Radio — Alternative
