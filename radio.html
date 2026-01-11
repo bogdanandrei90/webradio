@@ -252,14 +252,16 @@
 
   <!-- Volume -->
   <div class="volume">
-    <label>Volume</label>
+    <label>Volume <span id="volumeNote" style="font-size: 10px; color: var(--text-tertiary);"></span></label>
     <input
       type="range"
+      id="volumeSlider"
       min="0"
       max="1"
       step="0.01"
       value="0.7"
       oninput="setVolume(this.value)"
+      onchange="setVolume(this.value)"
     />
   </div>
 
@@ -414,8 +416,37 @@
   }
 
   function setVolume(value) {
-    audio.volume = value;
+    try {
+      audio.volume = value;
+      // Test if volume was actually set (iOS blocks this)
+      if (Math.abs(audio.volume - value) > 0.01) {
+        // Volume control is blocked (iOS)
+        document.getElementById('volumeNote').textContent = '(Use device buttons)';
+        document.getElementById('volumeSlider').disabled = true;
+        document.getElementById('volumeSlider').style.opacity = '0.5';
+      }
+    } catch (e) {
+      // Volume control not supported
+      document.getElementById('volumeNote').textContent = '(Use device buttons)';
+      document.getElementById('volumeSlider').disabled = true;
+      document.getElementById('volumeSlider').style.opacity = '0.5';
+    }
   }
+
+  // Check if volume control is supported
+  function checkVolumeSupport() {
+    const testAudio = new Audio();
+    testAudio.volume = 0.5;
+    if (Math.abs(testAudio.volume - 0.5) > 0.01) {
+      // Volume control is not supported (iOS)
+      document.getElementById('volumeNote').textContent = '(Use device buttons)';
+      document.getElementById('volumeSlider').disabled = true;
+      document.getElementById('volumeSlider').style.opacity = '0.5';
+    }
+  }
+
+  // Check volume support on load
+  checkVolumeSupport();
 
   function playPreset(url, stationDisplayName) {
     streamInput.value = url;
