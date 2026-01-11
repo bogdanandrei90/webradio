@@ -46,5 +46,6 @@ PWA-style install (no backend required)
 MIT — feel free to use, modify, and share.
 
 **Screenshot Note**
+
 <img width="468" height="673" alt="Screenshot 2026-01-11 at 19 20 16" src="https://github.com/user-attachments/assets/47873fc2-d2c8-4851-984a-d43bee4ccc36" />
 
