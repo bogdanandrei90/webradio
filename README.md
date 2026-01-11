@@ -1,8 +1,39 @@
-# webradio
-Web radio app for custom stations
-
-On your iPhone:
-
-Open Safari and visit https://bogdanandrei90.github.io/webradio/radio.html
-Tap Share button → "Add to Home Screen"
-Your radio app is now installed!
+🎧 Web Radio App – Custom Stations
+A lightweight, installable web radio app that lets you play any radio stream URL and quickly switch between curated presets.
+Designed with a clean interface and Day / Night mode for comfortable listening anytime.
+Minimal UI with custom stream input, presets, volume control, and day/night toggle.
+✨ Features
+▶️ Play / ⏸ Pause live radio streams
+🔗 Paste any radio stream URL
+🔊 Volume control
+⭐ One-tap station presets
+🌙☀️ Day / Night mode
+📱 Installable on mobile (PWA-style)
+🚫 No App Store required
+⚡ Fast, lightweight, no tracking
+📻 Included Presets
+🇪🇸 MegaStar FM — Pop
+🇷🇴 Dance FM — Dance
+🇬🇷 Off Radio — Alternative
+🇬🇧 Capital FM — Pop
+🇬🇷 Vanilla – Smooth Radio — Smooth
+🇬🇷 Vanilla – Deep Radio — Deep House
+🇩🇪 Antenne Bayern — Variety
+📱 Install on iPhone (No App Store Needed)
+Open Safari on your iPhone
+Visit:
+👉 https://bogdanandrei90.github.io/webradio/radio.html
+Tap the Share button
+Select “Add to Home Screen”
+✅ The app will now behave like a native application.
+💡 Usage Tips
+Supports most MP3 / AAC / Icecast / Shoutcast streams
+Best experience when installed to the Home Screen
+Toggle Day / Night mode anytime from the UI
+🛠 Tech
+HTML / CSS / JavaScript
+Audio streaming via native browser APIs
+PWA-style install (no backend required)
+📄 License
+MIT — feel free to use, modify, and share.
+📸 Screenshot Note
