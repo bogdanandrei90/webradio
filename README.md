@@ -6,17 +6,17 @@ A lightweight, installable web radio player that lets you stream any radio stati
 
 ##  Features
 
--  Play / ⏸ Pause** — Control live radio streams
--  Custom URLs** — Paste any radio stream URL
--  Volume Control** — Adjust playback volume
--  Quick Presets** — One-tap station switching
--   Day/Night Mode** — Auto-detect based on time or manual toggle
--  Elapsed Time** — Track how long you've been listening
--  Genre Labels** — See what type of music each station plays
--  Animated Equalizer** — Visual feedback when streaming
--  Installable PWA** — Add to home screen on iOS/Android
--  No App Store** — Direct install from browser
--  Fast & Lightweight** — No tracking, no bloat
+-  Play /  Pause — Control live radio streams
+-  Custom URLs — Paste any radio stream URL
+-  Volume Control — Adjust playback volume
+-  Quick Presets — One-tap station switching
+-   Day/Night Mode — Auto-detect based on time or manual toggle
+-  Elapsed Time — Track how long you've been listening
+-  Genre Labels — See what type of music each station plays
+-  Animated Equalizer — Visual feedback when streaming
+-  Installable PWA — Add to home screen on iOS/Android
+-  No App Store — Direct install from browser
+-  Fast & Lightweight — No tracking, no bloat
 
 ##  Included Presets
 
