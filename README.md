@@ -4,21 +4,21 @@ A lightweight, installable web radio player that lets you stream any radio stati
 
 <img width="468" alt="Web Radio App Screenshot" src="https://github.com/user-attachments/assets/47873fc2-d2c8-4851-984a-d43bee4ccc36" />
 
-## ✨ Features
+##  Features
 
-- **▶️ Play / ⏸ Pause** — Control live radio streams
-- **🔗 Custom URLs** — Paste any radio stream URL
-- **🔊 Volume Control** — Adjust playback volume
-- **⭐ Quick Presets** — One-tap station switching
-- **🌙 ☀️ Day/Night Mode** — Auto-detect based on time or manual toggle
-- **⏱️ Elapsed Time** — Track how long you've been listening
-- **🎵 Genre Labels** — See what type of music each station plays
-- **🎨 Animated Equalizer** — Visual feedback when streaming
-- **📱 Installable PWA** — Add to home screen on iOS/Android
-- **🚫 No App Store** — Direct install from browser
-- **⚡ Fast & Lightweight** — No tracking, no bloat
+- ** Play / ⏸ Pause** — Control live radio streams
+- ** Custom URLs** — Paste any radio stream URL
+- ** Volume Control** — Adjust playback volume
+- ** Quick Presets** — One-tap station switching
+- **  Day/Night Mode** — Auto-detect based on time or manual toggle
+- ** Elapsed Time** — Track how long you've been listening
+- ** Genre Labels** — See what type of music each station plays
+- ** Animated Equalizer** — Visual feedback when streaming
+- ** Installable PWA** — Add to home screen on iOS/Android
+- ** No App Store** — Direct install from browser
+- ** Fast & Lightweight** — No tracking, no bloat
 
-## 📻 Included Presets
+##  Included Presets
 
 - 🇪🇸 **MegaStar FM** — Pop
 - 🇷🇴 **Dance FM** — Dance
@@ -28,7 +28,7 @@ A lightweight, installable web radio player that lets you stream any radio stati
 - 🇬🇷 **Vanilla Radio** — Deep House
 - 🇩🇪 **Antenne Bayern** — Variety
 
-## 📱 Install on iPhone
+##  Install on iPhone
 
 **No App Store required!**
 
@@ -36,9 +36,9 @@ A lightweight, installable web radio player that lets you stream any radio stati
 2. Visit: **[https://bogdanandrei90.github.io/webradio/radio.html](https://bogdanandrei90.github.io/webradio/radio.html)**
 3. Tap the **Share** button (square with arrow)
 4. Select **"Add to Home Screen"**
-5. ✅ The app will now behave like a native application
+5.  The app will now behave like a native application
 
-## 🎯 Usage Tips
+##  Usage Tips
 
 - Supports most **MP3**, **AAC**, **Icecast**, and **Shoutcast** streams
 - Best experience when **installed to Home Screen**
@@ -46,7 +46,7 @@ A lightweight, installable web radio player that lets you stream any radio stati
 - **Paste custom stream URLs** for any radio station
 - Works great with **CarPlay** (audio routing)
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - Pure **HTML / CSS / JavaScript**
 - Native browser **Audio API**
@@ -54,7 +54,7 @@ A lightweight, installable web radio player that lets you stream any radio stati
 - **Service Worker** for offline support
 - No backend or dependencies required
 
-## 📝 License
+##  License
 
 MIT — Feel free to use, modify, and share.
 
