@@ -1,7 +1,10 @@
-🎧 Web Radio App – Custom Stations
+**🎧 Web Radio App – Custom Stations**
+
 A lightweight, installable web radio app that lets you play any radio stream URL and quickly switch between curated presets.
 Designed with a clean interface and Day / Night mode for comfortable listening anytime.
 Minimal UI with custom stream input, presets, volume control, and day/night toggle.
+
+
 ✨ Features
 ▶️ Play / ⏸ Pause live radio streams
 🔗 Paste any radio stream URL
