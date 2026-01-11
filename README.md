@@ -10,7 +10,7 @@ A lightweight, installable web radio player that lets you stream any radio stati
 - ** Custom URLs** — Paste any radio stream URL
 - ** Volume Control** — Adjust playback volume
 - ** Quick Presets** — One-tap station switching
-- ** ☀️ Day/Night Mode** — Auto-detect based on time or manual toggle
+- **  Day/Night Mode** — Auto-detect based on time or manual toggle
 - ** Elapsed Time** — Track how long you've been listening
 - ** Genre Labels** — See what type of music each station plays
 - ** Animated Equalizer** — Visual feedback when streaming
