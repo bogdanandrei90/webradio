@@ -1,7 +1,7 @@
 // Service Worker for offline functionality
 const CACHE_NAME = 'radio-v1';
 const urlsToCache = [
-  './radio1.html',
+  './radio.html',
   './manifest.json'
 ];
 

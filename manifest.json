@@ -2,7 +2,7 @@
   "name": "Web Radio Player",
   "short_name": "Radio",
   "description": "Stream your favorite radio stations",
-  "start_url": "./radio1.html",
+  "start_url": "./radio.html",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#1c1c1c",
