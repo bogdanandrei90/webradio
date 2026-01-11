@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Web Radio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  
+  <!-- iOS Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Radio" />
+  <link rel="apple-touch-icon" href="https://via.placeholder.com/180x180/1db954/000000?text=Radio" />
+  
+  <!-- Theme Colors -->
+  <meta name="theme-color" content="#1c1c1c" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .radio {
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 14px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .play {
+      background: #1db954;
+      color: #000;
+    }
+
+    .pause {
+      background: #ff4d4d;
+      color: #000;
+    }
+
+    .preset {
+      background: #333;
+      color: #fff;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .volume {
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .volume input {
+      width: 100%;
+    }
+
+    .loading {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #aaa;
+      display: none;
+    }
+
+    .flag-icon {
+      width: 20px;
+      height: 15px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+<div class="radio">
+  <h2>Web Radio</h2>
+
+  <!-- Stream URL -->
+  <input
+    type="text"
+    id="streamUrl"
+    placeholder="Paste radio stream URL"
+  />
+
+  <!-- Play / Pause -->
+  <div>
+    <button class="play" onclick="playRadio()">▶ Play</button>
+    <button class="pause" onclick="pauseRadio()">⏸ Pause</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div class="loading" id="loading">
+    Loading stream...
+  </div>
+
+  <!-- Volume -->
+  <div class="volume">
+    <label>Volume</label>
+    <input
+      type="range"
+      min="0"
+      max="1"
+      step="0.01"
+      value="0.7"
+      oninput="setVolume(this.value)"
+    />
+  </div>
+
+  <!-- Presets -->
+  <h3 style="margin-top: 15px;">Presets</h3>
+
+  <button class="preset" onclick="playPreset('https://megastar-cope.flumotion.com/playlist.m3u8')">
+    <img src="https://flagcdn.com/w20/es.png" class="flag-icon" alt="Spain"> MegaStar FM
+  </button>
+
+  <button class="preset" onclick="playPreset('https://edge126.rcs-rds.ro/profm/dancefm.mp3')">
+    <img src="https://flagcdn.com/w20/ro.png" class="flag-icon" alt="Romania"> Dance FM
+  </button>
+
+  <button class="preset" onclick="playPreset('https://s7.yesstreaming.net/stream/8000')">
+    <img src="https://flagcdn.com/w20/gr.png" class="flag-icon" alt="Greece"> Off Radio
+  </button>
+
+  <audio id="audio"></audio>
+</div>
+
+<script>
+  const audio = document.getElementById("audio");
+  const loading = document.getElementById("loading");
+  const streamInput = document.getElementById("streamUrl");
+
+  audio.volume = 0.7;
+
+  function playRadio() {
+    const url = streamInput.value.trim();
+    if (!url) {
+      alert("Please enter a stream URL");
+      return;
+    }
+
+    if (audio.src !== url) {
+      audio.src = url;
+    }
+
+    loading.style.display = "block";
+
+    audio.play().catch(() => {
+      loading.style.display = "none";
+      alert("Unable to play this stream.");
+    });
+  }
+
+  function pauseRadio() {
+    audio.pause();
+    loading.style.display = "none";
+  }
+
+  function setVolume(value) {
+    audio.volume = value;
+  }
+
+  function playPreset(url) {
+    streamInput.value = url;
+    playRadio();
+  }
+
+  audio.addEventListener("playing", () => {
+    loading.style.display = "none";
+  });
+
+  audio.addEventListener("waiting", () => {
+    loading.style.display = "block";
+  });
+
+  audio.addEventListener("error", () => {
+    loading.style.display = "none";
+    alert("Stream error.");
+  });
+
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(err => console.log('Service Worker registration failed:', err));
+  }
+</script>
+
+</body>
+</html>
