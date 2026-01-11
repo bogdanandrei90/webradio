@@ -6,8 +6,8 @@ Minimal UI with custom stream input, presets, volume control, and day/night togg
 
 
 ## **Features**
-▶️ Play / ⏸ Pause live radio streams
-🔗 Paste any radio stream URL
+▶️ - Play / ⏸ Pause live radio streams🔗 - 
+Paste any radio stream URL
 🔊 Volume control
 ⭐ One-tap station presets
 🌙☀️ Day / Night mode
