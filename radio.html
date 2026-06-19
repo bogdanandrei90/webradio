@@ -325,7 +325,7 @@
 
     .preset-list {
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
 
     .preset {
@@ -385,10 +385,7 @@
     }
 
     .preset-sub {
-      display: block;
-      margin-top: 4px;
-      font-size: 0.9rem;
-      color: var(--muted);
+      display: none;
     }
 
     .badge-live {
@@ -423,6 +420,8 @@
       .topbar { align-items: flex-start; }
       .controls { grid-template-columns: 1fr; }
       .preset { align-items: flex-start; }
+      .preset-main { gap: 8px; }
+      .preset-icon { width: 34px; height: 34px; }
     }
   </style>
 </head>
@@ -443,27 +442,23 @@
             </div>
             <div>
               <h1>Web Radio</h1>
-              <p class="subtitle">Simple player, cleaner spacing, calmer visual rhythm.</p>
             </div>
           </div>
           <button class="icon-button" id="themeToggle" type="button" aria-label="Toggle theme">☾</button>
         </div>
 
-        <label class="label" for="streamUrl">Stream URL</label>
-        <input class="url-input" id="streamUrl" type="text" value="https://example-stream.com/live.mp3" placeholder="Paste direct radio stream URL" />
-
-        <div class="controls">
+        <div class="controls" id="controlsRow" style="display: none;">
           <button class="btn btn-primary" id="playBtn" type="button">▶ Play</button>
           <button class="btn btn-secondary" id="refreshBtn" type="button">↻ Refresh</button>
         </div>
 
         <div class="player-grid">
-          <div class="now-playing">
+          <div class="now-playing" id="nowPlayingCard" style="display: none;">
             <div class="label">Now playing</div>
-            <div class="station-name" id="currentStation">MegaStar FM</div>
+            <div class="station-name" id="currentStation"></div>
             <div class="meta">
               <span class="live-dot" aria-hidden="true"></span>
-              <span id="statusText">Live stream active</span>
+              <span id="statusText"></span>
             </div>
           </div>
 
@@ -486,7 +481,7 @@
         </div>
 
         <div class="preset-list" id="presetList">
-          <button class="preset active" type="button" data-station="MegaStar FM" data-url="https://megastar-cope.flumotion.com/playlist.m3u8">
+          <button class="preset" type="button" data-station="MegaStar FM" data-url="https://megastar-cope.flumotion.com/playlist.m3u8">
             <span class="preset-main">
               <span class="preset-icon">♫</span>
               <span class="preset-copy">
@@ -494,7 +489,7 @@
                 <span class="preset-sub">Romania pop hits</span>
               </span>
             </span>
-            <span class="badge-live">Live</span>
+            <span class="pill">Ready</span>
           </button>
 
           <button class="preset" type="button" data-station="Dance FM" data-url="https://edge126.rcs-rds.ro/profm/dancefm.mp3">
@@ -610,6 +605,8 @@
     const volumeValue = document.getElementById('volumeValue');
     const currentStation = document.getElementById('currentStation');
     const statusText = document.getElementById('statusText');
+    const nowPlayingCard = document.getElementById('nowPlayingCard');
+    const controlsRow = document.getElementById('controlsRow');
     const streamUrl = document.getElementById('streamUrl');
     const playBtn = document.getElementById('playBtn');
     const refreshBtn = document.getElementById('refreshBtn');
@@ -632,7 +629,17 @@
     }
 
     function showNowPlaying(station, url) {
-      currentStation.textContent = station || 'Web Radio';
+      if (!station) {
+        nowPlayingCard.style.display = 'none';
+        controlsRow.style.display = 'none';
+        currentStation.textContent = '';
+        statusText.textContent = '';
+        return;
+      }
+
+      currentStation.textContent = station;
+      nowPlayingCard.style.display = 'block';
+      controlsRow.style.display = 'flex';
       if (url) streamUrl.value = url;
     }
 
@@ -649,7 +656,8 @@
         audio.src = url;
       }
 
-      setStatus(`Attempting to play ${currentStation.textContent}`);
+      const selectedStation = currentStation.textContent || 'Selected station';
+      setStatus(`Attempting to play ${selectedStation}`);
       audio.play()
         .then(() => {
           updatePlayButton();
@@ -657,7 +665,7 @@
         })
         .catch(() => {
           updatePlayButton();
-          setStatus(`Unable to play ${currentStation.textContent}`);
+          setStatus(`Unable to play ${selectedStation}`);
           alert('Unable to play this stream.');
         });
     }
@@ -703,7 +711,7 @@
         showNowPlaying(station, url);
         currentStreamUrl = url;
         setStatus(`Ready to play ${station}`);
-        updatePlayButton();
+        playRadio(url);
       });
     });
 
@@ -723,20 +731,27 @@
 
     audio.addEventListener('playing', () => {
       updatePlayButton();
-      setStatus('Live stream active');
+      if (currentStation.textContent) {
+        setStatus('Live stream active');
+      }
+    });
+
+    audio.addEventListener('pause', () => {
+      updatePlayButton();
+      if (currentStation.textContent) {
+        setStatus('Playback paused');
+      }
     });
 
     audio.addEventListener('waiting', () => {
       setStatus('Buffering…');
     });
 
-    audio.addEventListener('pause', () => {
-      updatePlayButton();
-    });
-
     audio.addEventListener('ended', () => {
       updatePlayButton();
-      setStatus('Stream ended');
+      if (currentStation.textContent) {
+        setStatus('Stream ended');
+      }
     });
 
     audio.addEventListener('error', () => {
