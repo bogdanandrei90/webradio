@@ -110,19 +110,9 @@
       margin-top: 6px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      text-align: left;
+      justify-content: center;
+      text-align: center;
       transition: background 0.3s;
-    }
-
-    .genre-badge {
-      background: var(--bg-button-sort);
-      color: var(--text-secondary);
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-left: 8px;
-      white-space: nowrap;
     }
 
     .sort {
@@ -146,13 +136,6 @@
       font-size: 13px;
       color: var(--text-secondary);
       display: none;
-    }
-
-    .flag-icon {
-      width: 20px;
-      height: 15px;
-      margin-right: 8px;
-      vertical-align: middle;
     }
 
     .now-playing {
@@ -269,55 +252,16 @@
   <h3 style="margin-top: 15px;">Presets</h3>
 
   <div id="presets-container">
-  <button class="preset" data-genre="Pop" onclick="playPreset('https://megastar-cope.flumotion.com/playlist.m3u8', 'MegaStar FM')">
-    <span><img src="https://flagcdn.com/w20/es.png" class="flag-icon" alt="Spain"> MegaStar FM</span>
-    <span class="genre-badge">Pop</span>
-  </button>
-
-  <button class="preset" data-genre="Dance" onclick="playPreset('https://edge126.rcs-rds.ro/profm/dancefm.mp3', 'Dance FM')">
-    <span><img src="https://flagcdn.com/w20/ro.png" class="flag-icon" alt="Romania"> Dance FM</span>
-    <span class="genre-badge">Dance</span>
-  </button>
-
-  <button class="preset" data-genre="Alternative" onclick="playPreset('https://s7.yesstreaming.net/stream/8000', 'Off Radio')">
-    <span><img src="https://flagcdn.com/w20/gr.png" class="flag-icon" alt="Greece"> Off Radio</span>
-    <span class="genre-badge">Alternative</span>
-  </button>
-
-  <button class="preset" data-genre="Pop" onclick="playPreset('https://media-ssl.musicradio.com/Capital', 'Capital FM')">
-    <span><img src="https://flagcdn.com/w20/gb.png" class="flag-icon" alt="UK"> Capital FM</span>
-    <span class="genre-badge">Pop</span>
-  </button>
-
-  <button class="preset" data-genre="Smooth" onclick="playPreset('https://smooth.vanillaradio.com:8032/live', 'Smooth Radio')">
-    <span><img src="https://flagcdn.com/w20/gr.png" class="flag-icon" alt="Vaniila Radio - Smooth"> Vanilla - Smooth Radio</span>
-    <span class="genre-badge">Smooth</span>
-  </button>
-
-  <button class="preset" data-genre="Deep House" onclick="playPreset('https://stream.vanillaradio.com:8016/stream/stream', 'Vanilla Radio')">
-    <span><img src="https://flagcdn.com/w20/gr.png" class="flag-icon" alt="Vanilla Radio - Deep"> Vanilla - Deep Radio</span>
-    <span class="genre-badge">Deep House</span>
-  </button>
-
-   <button class="preset" data-genre="Variety" onclick="playPreset('http://comet.shoutca.st:8366/listen.pls', 'ManCode Radio')">
-    <span><img src="https://flagcdn.com/w20/gr.png" class="flag-icon" alt="ManCode Radio"> ManCode Radio</span>
-    <span class="genre-badge">Variety</span>
-  </button>
-
-  <button class="preset" data-genre="Variety" onclick="playPreset('https://astreaming.edi.ro:8443/EuropaFM_aac', 'Europa FM')">
-    <span><img src="https://flagcdn.com/w20/ro.png" class="flag-icon" alt="Romania"> Europa FM</span>
-    <span class="genre-badge">Variety</span>
-  </button>
-
-    <button class="preset" data-genre="Variety" onclick="playPreset('https://n23-eu.rcs.revma.com/txdn8d324ucwv', 'MC2')">
-    <span><img src="https://flagcdn.com/w20/mc.png" class="flag-icon" alt="MC2"> MC2</span>
-    <span class="genre-badge">Variety</span>
-  </button>
-
-  <button class="preset" data-genre="Variety" onclick="playPreset('https://s1-webradio.antenne.de/antenne/stream/aacp', 'Antenne Bayern')">
-    <span><img src="https://flagcdn.com/w20/de.png" class="flag-icon" alt="Antenne Bayern"> Antenne Bayern</span>
-    <span class="genre-badge">Variety</span>
-  </button>
+    <button class="preset" onclick="playPreset('https://megastar-cope.flumotion.com/playlist.m3u8', 'MegaStar FM')">MegaStar FM</button>
+    <button class="preset" onclick="playPreset('https://edge126.rcs-rds.ro/profm/dancefm.mp3', 'Dance FM')">Dance FM</button>
+    <button class="preset" onclick="playPreset('https://s7.yesstreaming.net/stream/8000', 'Off Radio')">Off Radio</button>
+    <button class="preset" onclick="playPreset('https://media-ssl.musicradio.com/Capital', 'Capital FM')">Capital FM</button>
+    <button class="preset" onclick="playPreset('https://smooth.vanillaradio.com:8032/live', 'Smooth Radio')">Smooth Radio</button>
+    <button class="preset" onclick="playPreset('https://stream.vanillaradio.com:8016/stream/stream', 'Vanilla Radio')">Vanilla Radio</button>
+    <button class="preset" onclick="playPreset('http://comet.shoutca.st:8366/listen.pls', 'ManCode Radio')">ManCode Radio</button>
+    <button class="preset" onclick="playPreset('https://astreaming.edi.ro:8443/EuropaFM_aac', 'Europa FM')">Europa FM</button>
+    <button class="preset" onclick="playPreset('https://n23-eu.rcs.revma.com/txdn8d324ucwv', 'MC2')">MC2</button>
+    <button class="preset" onclick="playPreset('https://s1-webradio.antenne.de/antenne/stream/aacp', 'Antenne Bayern')">Antenne Bayern</button>
   </div>
 
   <audio id="audio"></audio>
