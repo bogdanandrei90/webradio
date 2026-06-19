@@ -1,450 +1,761 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <title>Web Radio Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+  <title>Web Radio Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json" />
-  
+
   <!-- iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Radio" />
   <link rel="apple-touch-icon" href="icon.png" />
-  
+
   <!-- Theme Colors -->
-  <meta name="theme-color" content="#1c1c1c" />
+  <meta name="theme-color" content="#0a0c10" />
 
   <style>
     :root {
-      --bg-primary: #111;
-      --bg-secondary: #1c1c1c;
-      --bg-tertiary: #222;
-      --bg-button: #333;
-      --bg-button-sort: #555;
-      --text-primary: #fff;
-      --text-secondary: #aaa;
-      --text-tertiary: #888;
-      --accent: #1db954;
+      --bg: #0a0c10;
+      --bg-soft: #10131a;
+      --panel: rgba(18, 21, 28, 0.92);
+      --panel-2: #171b23;
+      --panel-3: #1d232d;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(93, 167, 255, 0.32);
+      --text: #f4f7fb;
+      --muted: #a3adbb;
+      --faint: #7b8493;
+      --accent: #5da7ff;
+      --accent-soft: rgba(93, 167, 255, 0.12);
+      --accent-strong: #7fc0ff;
+      --success: #4fc36b;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    body.day-mode {
-      --bg-primary: #f5f5f5;
-      --bg-secondary: #ffffff;
-      --bg-tertiary: #e8e8e8;
-      --bg-button: #d0d0d0;
-      --bg-button-sort: #b0b0b0;
-      --text-primary: #000;
-      --text-secondary: #555;
-      --text-tertiary: #777;
-      --accent: #1db954;
+    [data-theme="light"] {
+      --bg: #eef3fa;
+      --bg-soft: #e7edf6;
+      --panel: rgba(255, 255, 255, 0.88);
+      --panel-2: #f7f9fc;
+      --panel-3: #eff4fb;
+      --border: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(49, 113, 198, 0.28);
+      --text: #111827;
+      --muted: #5f6b7c;
+      --faint: #7f8a98;
+      --accent: #3171c6;
+      --accent-soft: rgba(49, 113, 198, 0.1);
+      --accent-strong: #4a85d4;
+      --success: #2c9e57;
+      --shadow: 0 20px 50px rgba(41, 55, 86, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(93, 167, 255, 0.18), transparent 30%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .app {
+      width: min(100%, 760px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 22px;
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .stack { display: grid; gap: 18px; }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+    }
+
+    .topbar {
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      transition: background 0.3s, color 0.3s;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
     }
 
-    .radio {
-      background: var(--bg-secondary);
-      padding: 20px;
-      border-radius: 12px;
-      width: 320px;
-      text-align: center;
-      transition: background 0.3s;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
     }
 
-    h2 {
-      margin-bottom: 15px;
+    .brand-mark {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent-soft), rgba(127, 192, 255, 0.08));
+      color: var(--accent-strong);
+      border: 1px solid var(--border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
-    input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      border: none;
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
+    h1, h2, h3, p {
+      margin: 0;
     }
 
-    button {
-      padding: 10px 14px;
-      margin: 5px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.9rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
     }
 
-    .play {
-      background: #1db954;
-      color: #000;
-    }
-
-    .pause {
-      background: #ff4d4d;
-      color: #000;
-    }
-
-    .refresh {
-      background: #f0a500;
-      color: #000;
-    }
-
-    .theme-toggle {
-      background: var(--bg-button-sort);
-      color: var(--text-primary);
-      font-size: 20px;
-      padding: 8px 12px;
-      margin-left: 10px;
-    }
-
-    .preset {
-      background: var(--bg-button);
-      color: var(--text-primary);
-      width: 100%;
+    .subtitle {
       margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .icon-button {
+      width: 52px;
+      height: 52px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel-2);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    .icon-button:hover {
+      transform: translateY(-1px);
+      border-color: var(--border-strong);
+    }
+
+    .label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .url-input {
+      width: 100%;
+      padding: 17px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    .url-input::placeholder {
+      color: var(--faint);
+    }
+
+    .url-input:focus {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 4px rgba(93, 167, 255, 0.12);
+    }
+
+    .controls {
       display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 18px;
+      font-weight: 700;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      transition: background 0.3s;
+      gap: 10px;
+      min-width: 150px;
+      cursor: pointer;
+      transition: transform var(--transition), opacity var(--transition), background var(--transition), border-color var(--transition);
     }
 
-    .sort {
-      background: var(--bg-button-sort);
-      color: var(--text-primary);
-      font-size: 12px;
-      padding: 6px 10px;
+    .btn:hover {
+      transform: translateY(-1px);
     }
 
-    .volume {
-      margin-top: 15px;
-      text-align: left;
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #08111d;
     }
 
-    .volume input {
-      width: 100%;
+    .btn-secondary {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
 
-    .loading {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--text-secondary);
-      display: none;
+    .player-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 18px;
+      margin-top: 18px;
     }
 
     .now-playing {
-      background: var(--bg-tertiary);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--accent-soft), rgba(255,255,255,0.01));
+      border: 1px solid var(--border-strong);
+    }
+
+    .station-name {
+      font-size: 1.16rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 0 8px rgba(79, 195, 107, 0.12);
+      animation: pulse 1.7s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.18); opacity: 0.8; }
+    }
+
+    .volume-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+
+    .volume-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .value {
+      font-weight: 700;
+      font-size: 0.94rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .preset-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .preset {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 15px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    .preset:hover {
+      transform: translateY(-1px);
+      background: var(--panel-3);
+    }
+
+    .preset.active {
+      border-color: var(--border-strong);
+      background: linear-gradient(135deg, var(--accent-soft), rgba(255,255,255,0.015));
+    }
+
+    .preset-main {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .preset-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(93, 167, 255, 0.12);
+      color: var(--accent-strong);
+      flex-shrink: 0;
+    }
+
+    .preset-copy {
+      min-width: 0;
       text-align: left;
-      display: none;
-      transition: background 0.3s;
     }
 
-    .now-playing h4 {
-      margin: 0 0 8px 0;
-      font-size: 12px;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
+    .preset-name {
+      display: block;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .now-playing .track {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 4px;
+    .preset-sub {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
-    .now-playing .artist {
-      font-size: 14px;
-      color: var(--text-secondary);
+    .badge-live {
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: rgba(79, 195, 107, 0.1);
+      color: #a7eeb8;
+      border: 1px solid rgba(79, 195, 107, 0.16);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .elapsed-time {
-      font-size: 12px;
-      color: var(--text-tertiary);
-      margin-top: 8px;
+    .footer-note {
+      margin-top: 16px;
+      color: var(--faint);
+      font-size: 0.88rem;
     }
 
-    .equalizer {
-      display: inline-flex;
-      align-items: flex-end;
-      height: 16px;
-      gap: 2px;
-      margin-right: 8px;
+    @media (max-width: 700px) {
+      body { padding: 16px; }
+      .app { padding: 16px; border-radius: 24px; }
+      .card { padding: 18px; }
+      .player-grid { grid-template-columns: 1fr; }
+      .controls { display: grid; grid-template-columns: 1fr 1fr; }
+      .btn { width: 100%; min-width: 0; }
+      .section-head { align-items: flex-start; flex-direction: column; }
     }
 
-    .equalizer span {
-      width: 3px;
-      background: var(--accent);
-      animation: equalize 1s ease-in-out infinite;
-    }
-
-    .equalizer span:nth-child(1) { animation-delay: 0s; }
-    .equalizer span:nth-child(2) { animation-delay: 0.2s; }
-    .equalizer span:nth-child(3) { animation-delay: 0.4s; }
-    .equalizer span:nth-child(4) { animation-delay: 0.6s; }
-
-    @keyframes equalize {
-      0%, 100% { height: 4px; }
-      50% { height: 16px; }
+    @media (max-width: 520px) {
+      .topbar { align-items: flex-start; }
+      .controls { grid-template-columns: 1fr; }
+      .preset { align-items: flex-start; }
     }
   </style>
 </head>
 <body>
+  <main class="app">
+    <div class="stack">
+      <section class="card">
+        <div class="topbar">
+          <div class="brand">
+            <div class="brand-mark" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12a8 8 0 0 1 8-8"></path>
+                <path d="M4 12a8 8 0 0 0 8 8"></path>
+                <path d="M8 12a4 4 0 0 1 4-4"></path>
+                <path d="M8 12a4 4 0 0 0 4 4"></path>
+                <circle cx="17" cy="12" r="2"></circle>
+              </svg>
+            </div>
+            <div>
+              <h1>Web Radio</h1>
+              <p class="subtitle">Simple player, cleaner spacing, calmer visual rhythm.</p>
+            </div>
+          </div>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Toggle theme">☾</button>
+        </div>
 
-<div class="radio">
-  <h2>Web Radio <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button></h2>
+        <label class="label" for="streamUrl">Stream URL</label>
+        <input class="url-input" id="streamUrl" type="text" value="https://example-stream.com/live.mp3" placeholder="Paste direct radio stream URL" />
 
-  <!-- Playback / Refresh -->
-  <div>
-    <button id="playPauseButton" class="play" onclick="togglePlayback()" style="display: none;">▶ Play</button>
-    <button class="refresh" onclick="forceRefresh()">↻ Refresh</button>
-  </div>
+        <div class="controls">
+          <button class="btn btn-primary" id="playBtn" type="button">▶ Play</button>
+          <button class="btn btn-secondary" id="refreshBtn" type="button">↻ Refresh</button>
+        </div>
 
-  <!-- Loading indicator -->
-  <div class="loading" id="loading">
-    Loading stream...
-  </div>
+        <div class="player-grid">
+          <div class="now-playing">
+            <div class="label">Now playing</div>
+            <div class="station-name" id="currentStation">MegaStar FM</div>
+            <div class="meta">
+              <span class="live-dot" aria-hidden="true"></span>
+              <span id="statusText">Live stream active</span>
+            </div>
+          </div>
 
-  <!-- Now Playing -->
-  <div class="now-playing" id="nowPlaying">
-    <h4>Now Playing</h4>
-    <div class="track" id="trackTitle">
-      <div class="equalizer" id="equalizer">
-        <span></span><span></span><span></span><span></span>
-      </div>
-      <span id="stationName">-</span>
+          <div class="volume-card">
+            <div class="volume-row">
+              <span class="label" style="margin:0;">Volume</span>
+              <span class="value" id="volumeValue">68%</span>
+            </div>
+            <input id="volumeSlider" type="range" min="0" max="100" value="68" />
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>Presets</h2>
+          </div>
+          <span class="pill">10 saved</span>
+        </div>
+
+        <div class="preset-list" id="presetList">
+          <button class="preset active" type="button" data-station="MegaStar FM" data-url="https://megastar-cope.flumotion.com/playlist.m3u8">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">MegaStar FM</span>
+                <span class="preset-sub">Romania pop hits</span>
+              </span>
+            </span>
+            <span class="badge-live">Live</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Dance FM" data-url="https://edge126.rcs-rds.ro/profm/dancefm.mp3">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Dance FM</span>
+                <span class="preset-sub">Club and electronic</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Off Radio" data-url="https://s7.yesstreaming.net/stream/8000">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Off Radio</span>
+                <span class="preset-sub">Smooth lounge</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Capital FM" data-url="https://media-ssl.musicradio.com/Capital">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Capital FM</span>
+                <span class="preset-sub">UK chart radio</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Vanilla Smooth Radio" data-url="https://smooth.vanillaradio.com:8032/live">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Vanilla Smooth Radio</span>
+                <span class="preset-sub">Smooth radio</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Vanilla Deep Radio" data-url="https://stream.vanillaradio.com:8016/stream/stream">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Vanilla Deep Radio</span>
+                <span class="preset-sub">Deep house</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="ManCode Radio" data-url="https://stream.radiojar.com/2kqw1800x68uv">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">ManCode Radio</span>
+                <span class="preset-sub">Variety</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Europa FM" data-url="https://astreaming.edi.ro:8443/EuropaFM_aac">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Europa FM</span>
+                <span class="preset-sub">Mainstream mix</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="MC2" data-url="https://n23-eu.rcs.revma.com/txdn8d324ucwv">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">MC2</span>
+                <span class="preset-sub">International variety</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+
+          <button class="preset" type="button" data-station="Antenne Bayern" data-url="https://s1-webradio.antenne.de/antenne/stream/aacp">
+            <span class="preset-main">
+              <span class="preset-icon">♫</span>
+              <span class="preset-copy">
+                <span class="preset-name">Antenne Bayern</span>
+                <span class="preset-sub">German variety</span>
+              </span>
+            </span>
+            <span class="pill">Ready</span>
+          </button>
+        </div>
+
+      </section>
     </div>
-    <div class="artist" id="artistName">-</div>
-  </div>
-
-  <!-- Volume -->
-  <div class="volume">
-    <label>Volume <span id="volumeNote" style="font-size: 10px; color: var(--text-tertiary);"></span></label>
-    <input
-      type="range"
-      id="volumeSlider"
-      min="0"
-      max="1"
-      step="0.01"
-      value="0.7"
-      oninput="setVolume(this.value)"
-      onchange="setVolume(this.value)"
-    />
-  </div>
-
-  <!-- Presets -->
-  <h3 style="margin-top: 15px;">Presets</h3>
-
-  <div id="presets-container">
-    <button class="preset" onclick="playPreset('https://megastar-cope.flumotion.com/playlist.m3u8', 'MegaStar FM')">MegaStar FM</button>
-    <button class="preset" onclick="playPreset('https://edge126.rcs-rds.ro/profm/dancefm.mp3', 'Dance FM')">Dance FM</button>
-    <button class="preset" onclick="playPreset('https://s7.yesstreaming.net/stream/8000', 'Off Radio')">Off Radio</button>
-    <button class="preset" onclick="playPreset('https://media-ssl.musicradio.com/Capital', 'Capital FM')">Capital FM</button>
-    <button class="preset" onclick="playPreset('https://smooth.vanillaradio.com:8032/live', 'Vanilla Smooth Radio')">Vanilla Smooth Radio</button>
-    <button class="preset" onclick="playPreset('https://stream.vanillaradio.com:8016/stream/stream', 'Vanilla Deep Radio')">Vanilla Radio</button>
-    <button class="preset" onclick="playPreset('https://stream.radiojar.com/2kqw1800x68uv', 'ManCode Radio')">ManCode Radio</button>
-    <button class="preset" onclick="playPreset('https://astreaming.edi.ro:8443/EuropaFM_aac', 'Europa FM')">Europa FM</button>
-    <button class="preset" onclick="playPreset('https://n23-eu.rcs.revma.com/txdn8d324ucwv', 'MC2')">MC2</button>
-    <button class="preset" onclick="playPreset('https://s1-webradio.antenne.de/antenne/stream/aacp', 'Antenne Bayern')">Antenne Bayern</button>
-  </div>
+  </main>
 
   <audio id="audio"></audio>
-</div>
 
-<script>
-  const audio = document.getElementById("audio");
-  const loading = document.getElementById("loading");
-  const nowPlaying = document.getElementById("nowPlaying");
-  const stationName = document.getElementById("stationName");
-  const artistName = document.getElementById("artistName");
-  const equalizer = document.getElementById("equalizer");
-  const playPauseButton = document.getElementById("playPauseButton");
-
-  let currentStreamUrl = "";
-  audio.volume = 0.7;
-
-  // Theme toggling
-  function toggleTheme() {
-    const body = document.body;
+  <script>
+    const root = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
-    body.classList.toggle('day-mode');
-    
-    if (body.classList.contains('day-mode')) {
-      themeToggle.textContent = '☀️';
-      localStorage.setItem('theme', 'day');
-    } else {
-      themeToggle.textContent = '🌙';
-      localStorage.setItem('theme', 'night');
-    }
-  }
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    const currentStation = document.getElementById('currentStation');
+    const statusText = document.getElementById('statusText');
+    const streamUrl = document.getElementById('streamUrl');
+    const playBtn = document.getElementById('playBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const audio = document.getElementById('audio');
+    const presets = Array.from(document.querySelectorAll('.preset'));
 
-  // Auto-detect time-based theme on load
-  function initTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const hour = new Date().getHours();
-    const themeToggle = document.getElementById('themeToggle');
-    
-    if (savedTheme === 'day' || (!savedTheme && hour >= 6 && hour < 18)) {
-      document.body.classList.add('day-mode');
-      themeToggle.textContent = '☀️';
-    } else {
-      themeToggle.textContent = '🌙';
-    }
-  }
+    let currentStreamUrl = '';
 
-  // Initialize theme on page load
-  initTheme();
-
-  // Show Now Playing with station name and equalizer
-  function showNowPlaying(station) {
-    equalizer.style.display = "inline-flex";
-    stationName.textContent = station || "Web Radio";
-    artistName.style.display = "none"; // Hide the artist line
-    nowPlaying.style.display = "block";
-  }
-
-  function updatePlaybackButton() {
-    const isPlaying = !audio.paused && !audio.ended;
-    playPauseButton.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
-    playPauseButton.className = isPlaying ? 'pause' : 'play';
-  }
-
-  function togglePlayback() {
-    if (audio.paused || audio.ended) {
-      playRadio();
-    } else {
-      audio.pause();
-      loading.style.display = "none";
-      updatePlaybackButton();
-    }
-  }
-
-  function playRadio(url = currentStreamUrl) {
-    if (!url) {
-      alert("Please select a preset first.");
-      return;
+    function syncThemeIcon() {
+      themeToggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☾' : '☀';
     }
 
-    if (audio.src !== url) {
-      audio.src = url;
+    function updatePlayButton() {
+      const isPlaying = !audio.paused && !audio.ended;
+      playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
     }
 
-    loading.style.display = "block";
-    updatePlaybackButton();
-
-    audio.play().then(() => {
-      updatePlaybackButton();
-    }).catch(() => {
-      loading.style.display = "none";
-      updatePlaybackButton();
-      alert("Unable to play this stream.");
-    });
-  }
-
-  function forceRefresh() {
-    if (!currentStreamUrl) {
-      alert("Please select a preset first.");
-      return;
+    function setStatus(message) {
+      statusText.textContent = message;
     }
 
-    if (audio.src !== currentStreamUrl) {
-      audio.src = currentStreamUrl;
+    function showNowPlaying(station, url) {
+      currentStation.textContent = station || 'Web Radio';
+      if (url) streamUrl.value = url;
     }
 
-    loading.style.display = "block";
-    audio.load();
-
-    audio.play().catch(() => {
-      loading.style.display = "none";
-      alert("Unable to refresh this stream.");
-    });
-  }
-
-  function setVolume(value) {
-    try {
-      audio.volume = value;
-      // Test if volume was actually set (iOS blocks this)
-      if (Math.abs(audio.volume - value) > 0.01) {
-        // Volume control is blocked (iOS)
-        document.getElementById('volumeNote').textContent = '(Use device buttons)';
-        document.getElementById('volumeSlider').disabled = true;
-        document.getElementById('volumeSlider').style.opacity = '0.5';
+    function playRadio(url = currentStreamUrl || streamUrl.value.trim()) {
+      if (!url) {
+        setStatus('Please select a preset first.');
+        return;
       }
-    } catch (e) {
-      // Volume control not supported
-      document.getElementById('volumeNote').textContent = '(Use device buttons)';
-      document.getElementById('volumeSlider').disabled = true;
-      document.getElementById('volumeSlider').style.opacity = '0.5';
+
+      currentStreamUrl = url;
+      streamUrl.value = url;
+
+      if (audio.src !== url) {
+        audio.src = url;
+      }
+
+      setStatus(`Attempting to play ${currentStation.textContent}`);
+      audio.play()
+        .then(() => {
+          updatePlayButton();
+          setStatus(`Live stream active`);
+        })
+        .catch(() => {
+          updatePlayButton();
+          setStatus(`Unable to play ${currentStation.textContent}`);
+          alert('Unable to play this stream.');
+        });
     }
-  }
 
-  // Check if volume control is supported
-  function checkVolumeSupport() {
-    const testAudio = new Audio();
-    testAudio.volume = 0.5;
-    if (Math.abs(testAudio.volume - 0.5) > 0.01) {
-      // Volume control is not supported (iOS)
-      document.getElementById('volumeNote').textContent = '(Use device buttons)';
-      document.getElementById('volumeSlider').disabled = true;
-      document.getElementById('volumeSlider').style.opacity = '0.5';
+    function refreshStream() {
+      if (!currentStreamUrl && !streamUrl.value.trim()) {
+        setStatus('Please select a preset first.');
+        return;
+      }
+
+      const url = currentStreamUrl || streamUrl.value.trim();
+      currentStreamUrl = url;
+      streamUrl.value = url;
+      setStatus('Refreshing stream…');
+      audio.src = url;
+      audio.load();
+      audio.play().catch(() => {
+        setStatus(`Unable to refresh ${currentStation.textContent}`);
+        alert('Unable to refresh this stream.');
+      });
     }
-  }
 
-  // Check volume support on load
-  checkVolumeSupport();
+    themeToggle.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      syncThemeIcon();
+    });
 
-  function playPreset(url, stationDisplayName) {
-    currentStreamUrl = url;
-    playPauseButton.style.display = "inline-block";
-    showNowPlaying(stationDisplayName || "Web Radio");
-    playRadio(url);
-  }
+    syncThemeIcon();
 
-  audio.addEventListener("playing", () => {
-    loading.style.display = "none";
-    updatePlaybackButton();
-  });
+    volumeSlider.addEventListener('input', () => {
+      const value = Number(volumeSlider.value);
+      volumeValue.textContent = `${value}%`;
+      audio.volume = value / 100;
+    });
 
-  audio.addEventListener("pause", () => {
-    updatePlaybackButton();
-  });
+    presets.forEach((preset) => {
+      preset.addEventListener('click', () => {
+        presets.forEach((item) => item.classList.remove('active'));
+        preset.classList.add('active');
+        const station = preset.dataset.station;
+        const url = preset.dataset.url;
+        showNowPlaying(station, url);
+        currentStreamUrl = url;
+        setStatus(`Ready to play ${station}`);
+        updatePlayButton();
+      });
+    });
 
-  audio.addEventListener("ended", () => {
-    updatePlaybackButton();
-  });
+    playBtn.addEventListener('click', () => {
+      if (audio.paused || audio.ended) {
+        playRadio();
+      } else {
+        audio.pause();
+        updatePlayButton();
+        setStatus('Playback paused');
+      }
+    });
 
-  audio.addEventListener("waiting", () => {
-    loading.style.display = "block";
-  });
+    refreshBtn.addEventListener('click', () => {
+      refreshStream();
+    });
 
-  audio.addEventListener("error", () => {
-    loading.style.display = "none";
-    updatePlaybackButton();
-    alert("Stream error.");
-  });
+    audio.addEventListener('playing', () => {
+      updatePlayButton();
+      setStatus('Live stream active');
+    });
 
-  updatePlaybackButton();
+    audio.addEventListener('waiting', () => {
+      setStatus('Buffering…');
+    });
 
-  // Register Service Worker for PWA
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(() => console.log('Service Worker registered'))
-      .catch(err => console.log('Service Worker registration failed:', err));
-  }
-</script>
+    audio.addEventListener('pause', () => {
+      updatePlayButton();
+    });
 
+    audio.addEventListener('ended', () => {
+      updatePlayButton();
+      setStatus('Stream ended');
+    });
+
+    audio.addEventListener('error', () => {
+      updatePlayButton();
+      setStatus('Stream error');
+      alert('Stream error.');
+    });
+
+    audio.volume = 0.68;
+    volumeSlider.value = 68;
+    volumeValue.textContent = '68%';
+    updatePlayButton();
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed:', err));
+    }
+  </script>
 </body>
 </html>
