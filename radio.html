@@ -207,16 +207,9 @@
 <div class="radio">
   <h2>Web Radio <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button></h2>
 
-  <!-- Stream URL -->
-  <input
-    type="text"
-    id="streamUrl"
-    placeholder="Paste radio stream URL"
-  />
-
   <!-- Playback / Refresh -->
   <div>
-    <button id="playPauseButton" class="play" onclick="togglePlayback()">▶ Play</button>
+    <button id="playPauseButton" class="play" onclick="togglePlayback()" style="display: none;">▶ Play</button>
     <button class="refresh" onclick="forceRefresh()">↻ Refresh</button>
   </div>
 
@@ -274,13 +267,13 @@
 <script>
   const audio = document.getElementById("audio");
   const loading = document.getElementById("loading");
-  const streamInput = document.getElementById("streamUrl");
   const nowPlaying = document.getElementById("nowPlaying");
   const stationName = document.getElementById("stationName");
   const artistName = document.getElementById("artistName");
   const equalizer = document.getElementById("equalizer");
   const playPauseButton = document.getElementById("playPauseButton");
 
+  let currentStreamUrl = "";
   audio.volume = 0.7;
 
   // Theme toggling
@@ -339,10 +332,9 @@
     }
   }
 
-  function playRadio() {
-    const url = streamInput.value.trim();
+  function playRadio(url = currentStreamUrl) {
     if (!url) {
-      alert("Please enter a stream URL");
+      alert("Please select a preset first.");
       return;
     }
 
@@ -363,14 +355,13 @@
   }
 
   function forceRefresh() {
-    const url = streamInput.value.trim();
-    if (!url) {
-      alert("Please enter a stream URL");
+    if (!currentStreamUrl) {
+      alert("Please select a preset first.");
       return;
     }
 
-    if (audio.src !== url) {
-      audio.src = url;
+    if (audio.src !== currentStreamUrl) {
+      audio.src = currentStreamUrl;
     }
 
     loading.style.display = "block";
@@ -416,9 +407,10 @@
   checkVolumeSupport();
 
   function playPreset(url, stationDisplayName) {
-    streamInput.value = url;
+    currentStreamUrl = url;
+    playPauseButton.style.display = "inline-block";
     showNowPlaying(stationDisplayName || "Web Radio");
-    playRadio();
+    playRadio(url);
   }
 
   audio.addEventListener("playing", () => {
