@@ -785,10 +785,12 @@
     updatePlayButton();
 
     // Register Service Worker for PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      navigator.serviceWorker.register('./sw.js')
         .then(() => console.log('Service Worker registered'))
         .catch(err => console.log('Service Worker registration failed:', err));
+    } else if (location.protocol === 'file:') {
+      console.log('Service Worker skipped because the page is loaded from file://');
     }
   </script>
 </body>
