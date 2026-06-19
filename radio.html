@@ -350,7 +350,9 @@
 
     .preset.active {
       border-color: var(--border-strong);
-      background: linear-gradient(135deg, var(--accent-soft), rgba(255,255,255,0.015));
+      background: linear-gradient(135deg, var(--accent-soft), rgba(93, 167, 255, 0.06));
+      box-shadow: inset 0 0 0 1px rgba(93, 167, 255, 0.08), 0 0 0 1px rgba(93, 167, 255, 0.04);
+      transform: translateY(-1px);
     }
 
     .preset-main {
@@ -627,18 +629,30 @@
       statusText.textContent = message;
     }
 
+    function updatePresetStates() {
+      presets.forEach((preset) => {
+        const badge = preset.querySelector('.pill');
+        if (!badge) return;
+
+        const isPlaying = preset.dataset.url === currentStreamUrl && !audio.paused && !audio.ended;
+        badge.textContent = isPlaying ? 'Live' : 'Ready';
+      });
+    }
+
     function showNowPlaying(station) {
       if (!station) {
         nowPlayingCard.style.display = 'none';
         controlsRow.style.display = 'none';
         currentStation.textContent = '';
         statusText.textContent = '';
+        updatePresetStates();
         return;
       }
 
       currentStation.textContent = station;
       nowPlayingCard.style.display = 'block';
       controlsRow.style.display = 'flex';
+      updatePresetStates();
     }
 
     function playRadio(url = currentStreamUrl) {
@@ -658,10 +672,12 @@
       audio.play()
         .then(() => {
           updatePlayButton();
+          updatePresetStates();
           setStatus(`Live stream active`);
         })
         .catch(() => {
           updatePlayButton();
+          updatePresetStates();
           setStatus(`Unable to play ${selectedStation}`);
           alert('Unable to play this stream.');
         });
@@ -705,6 +721,7 @@
         const url = preset.dataset.url;
         showNowPlaying(station);
         currentStreamUrl = url;
+        updatePresetStates();
         setStatus(`Ready to play ${station}`);
         playRadio(url);
       });
@@ -716,6 +733,7 @@
       } else {
         audio.pause();
         updatePlayButton();
+        updatePresetStates();
         setStatus('Playback paused');
       }
     });
@@ -726,6 +744,7 @@
 
     audio.addEventListener('playing', () => {
       updatePlayButton();
+      updatePresetStates();
       if (currentStation.textContent) {
         setStatus('Live stream active');
       }
@@ -733,17 +752,20 @@
 
     audio.addEventListener('pause', () => {
       updatePlayButton();
+      updatePresetStates();
       if (currentStation.textContent) {
         setStatus('Playback paused');
       }
     });
 
     audio.addEventListener('waiting', () => {
+      updatePresetStates();
       setStatus('Buffering…');
     });
 
     audio.addEventListener('ended', () => {
       updatePlayButton();
+      updatePresetStates();
       if (currentStation.textContent) {
         setStatus('Stream ended');
       }
@@ -751,6 +773,7 @@
 
     audio.addEventListener('error', () => {
       updatePlayButton();
+      updatePresetStates();
       setStatus('Stream error');
       alert('Stream error.');
     });
@@ -758,6 +781,7 @@
     audio.volume = 0.68;
     volumeSlider.value = 68;
     volumeValue.textContent = '68%';
+    updatePresetStates();
     updatePlayButton();
 
     // Register Service Worker for PWA
