@@ -214,10 +214,9 @@
     placeholder="Paste radio stream URL"
   />
 
-  <!-- Play / Pause / Refresh -->
+  <!-- Playback / Refresh -->
   <div>
-    <button class="play" onclick="playRadio()">▶ Play</button>
-    <button class="pause" onclick="pauseRadio()">⏸ Pause</button>
+    <button id="playPauseButton" class="play" onclick="togglePlayback()">▶ Play</button>
     <button class="refresh" onclick="forceRefresh()">↻ Refresh</button>
   </div>
 
@@ -236,7 +235,6 @@
       <span id="stationName">-</span>
     </div>
     <div class="artist" id="artistName">-</div>
-    <div class="elapsed-time" id="elapsedTime">0:00</div>
   </div>
 
   <!-- Volume -->
@@ -259,7 +257,7 @@
 
   <div id="presets-container">
     <button class="preset" onclick="playPreset('https://megastar-cope.flumotion.com/playlist.m3u8', 'MegaStar FM')">MegaStar FM</button>
-    <button class="preset" onclick="playPreset('https://edge126.rcs-rds.ro/profm/dancefm.mp3', 'Dance FM')">Dance FM'</button>
+    <button class="preset" onclick="playPreset('https://edge126.rcs-rds.ro/profm/dancefm.mp3', 'Dance FM')">Dance FM</button>
     <button class="preset" onclick="playPreset('https://s7.yesstreaming.net/stream/8000', 'Off Radio')">Off Radio</button>
     <button class="preset" onclick="playPreset('https://media-ssl.musicradio.com/Capital', 'Capital FM')">Capital FM</button>
     <button class="preset" onclick="playPreset('https://smooth.vanillaradio.com:8032/live', 'Vanilla Smooth Radio')">Vanilla Smooth Radio</button>
@@ -281,11 +279,9 @@
   const stationName = document.getElementById("stationName");
   const artistName = document.getElementById("artistName");
   const equalizer = document.getElementById("equalizer");
-  const elapsedTime = document.getElementById("elapsedTime");
+  const playPauseButton = document.getElementById("playPauseButton");
 
   audio.volume = 0.7;
-  let startTime = null;
-  let timerInterval = null;
 
   // Theme toggling
   function toggleTheme() {
@@ -319,40 +315,28 @@
   // Initialize theme on page load
   initTheme();
 
-  // Update elapsed time
-  function updateElapsedTime() {
-    if (!startTime) return;
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
-    elapsedTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
-
-  // Start timer
-  function startTimer() {
-    startTime = Date.now();
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(updateElapsedTime, 1000);
-    updateElapsedTime();
-  }
-
-  // Stop timer
-  function stopTimer() {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-    startTime = null;
-    elapsedTime.textContent = "0:00";
-  }
-
   // Show Now Playing with station name and equalizer
   function showNowPlaying(station) {
     equalizer.style.display = "inline-flex";
     stationName.textContent = station || "Web Radio";
     artistName.style.display = "none"; // Hide the artist line
     nowPlaying.style.display = "block";
-    startTimer();
+  }
+
+  function updatePlaybackButton() {
+    const isPlaying = !audio.paused && !audio.ended;
+    playPauseButton.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+    playPauseButton.className = isPlaying ? 'pause' : 'play';
+  }
+
+  function togglePlayback() {
+    if (audio.paused || audio.ended) {
+      playRadio();
+    } else {
+      audio.pause();
+      loading.style.display = "none";
+      updatePlaybackButton();
+    }
   }
 
   function playRadio() {
@@ -367,17 +351,15 @@
     }
 
     loading.style.display = "block";
+    updatePlaybackButton();
 
-    audio.play().catch(() => {
+    audio.play().then(() => {
+      updatePlaybackButton();
+    }).catch(() => {
       loading.style.display = "none";
+      updatePlaybackButton();
       alert("Unable to play this stream.");
     });
-  }
-
-  function pauseRadio() {
-    audio.pause();
-    loading.style.display = "none";
-    stopTimer();
   }
 
   function forceRefresh() {
@@ -441,6 +423,15 @@
 
   audio.addEventListener("playing", () => {
     loading.style.display = "none";
+    updatePlaybackButton();
+  });
+
+  audio.addEventListener("pause", () => {
+    updatePlaybackButton();
+  });
+
+  audio.addEventListener("ended", () => {
+    updatePlaybackButton();
   });
 
   audio.addEventListener("waiting", () => {
@@ -449,8 +440,11 @@
 
   audio.addEventListener("error", () => {
     loading.style.display = "none";
+    updatePlaybackButton();
     alert("Stream error.");
   });
+
+  updatePlaybackButton();
 
   // Register Service Worker for PWA
   if ('serviceWorker' in navigator) {
