@@ -607,7 +607,6 @@
     const statusText = document.getElementById('statusText');
     const nowPlayingCard = document.getElementById('nowPlayingCard');
     const controlsRow = document.getElementById('controlsRow');
-    const streamUrl = document.getElementById('streamUrl');
     const playBtn = document.getElementById('playBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const audio = document.getElementById('audio');
@@ -628,7 +627,7 @@
       statusText.textContent = message;
     }
 
-    function showNowPlaying(station, url) {
+    function showNowPlaying(station) {
       if (!station) {
         nowPlayingCard.style.display = 'none';
         controlsRow.style.display = 'none';
@@ -640,17 +639,15 @@
       currentStation.textContent = station;
       nowPlayingCard.style.display = 'block';
       controlsRow.style.display = 'flex';
-      if (url) streamUrl.value = url;
     }
 
-    function playRadio(url = currentStreamUrl || streamUrl.value.trim()) {
+    function playRadio(url = currentStreamUrl) {
       if (!url) {
         setStatus('Please select a preset first.');
         return;
       }
 
       currentStreamUrl = url;
-      streamUrl.value = url;
 
       if (audio.src !== url) {
         audio.src = url;
@@ -671,14 +668,12 @@
     }
 
     function refreshStream() {
-      if (!currentStreamUrl && !streamUrl.value.trim()) {
+      if (!currentStreamUrl) {
         setStatus('Please select a preset first.');
         return;
       }
 
-      const url = currentStreamUrl || streamUrl.value.trim();
-      currentStreamUrl = url;
-      streamUrl.value = url;
+      const url = currentStreamUrl;
       setStatus('Refreshing stream…');
       audio.src = url;
       audio.load();
@@ -708,7 +703,7 @@
         preset.classList.add('active');
         const station = preset.dataset.station;
         const url = preset.dataset.url;
-        showNowPlaying(station, url);
+        showNowPlaying(station);
         currentStreamUrl = url;
         setStatus(`Ready to play ${station}`);
         playRadio(url);
