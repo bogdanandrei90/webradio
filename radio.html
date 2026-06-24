@@ -258,6 +258,26 @@
       font-size: 0.95rem;
     }
 
+    .station-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .station-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      border: 1px solid rgba(93, 167, 255, 0.16);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
     .live-dot {
       width: 10px;
       height: 10px;
@@ -462,6 +482,10 @@
               <span class="live-dot" aria-hidden="true"></span>
               <span id="statusText"></span>
             </div>
+            <div class="station-details" id="stationDetails" style="display: none;">
+              <span class="station-chip" id="stationCountry"></span>
+              <span class="station-chip" id="stationGenre"></span>
+            </div>
           </div>
 
           <div class="volume-card">
@@ -487,7 +511,7 @@
               <span class="preset-icon">♫</span>
               <span class="preset-copy">
                 <span class="preset-name">MegaStar FM</span>
-                <span class="preset-sub">Romania pop hits</span>
+                <span class="preset-sub">Spain pop hits</span>
               </span>
             </span>
             <span class="pill">Ready</span>
@@ -606,6 +630,9 @@
     const volumeValue = document.getElementById('volumeValue');
     const currentStation = document.getElementById('currentStation');
     const statusText = document.getElementById('statusText');
+    const stationDetails = document.getElementById('stationDetails');
+    const stationCountry = document.getElementById('stationCountry');
+    const stationGenre = document.getElementById('stationGenre');
     const nowPlayingCard = document.getElementById('nowPlayingCard');
     const controlsRow = document.getElementById('controlsRow');
     const playBtn = document.getElementById('playBtn');
@@ -614,6 +641,19 @@
     const presets = Array.from(document.querySelectorAll('.preset'));
 
     let currentStreamUrl = '';
+
+    const stationMeta = {
+      'MegaStar FM': { country: 'Spain', flag: '🇪🇸', genre: 'Pop' },
+      'Dance FM': { country: 'Romania', flag: '🇷🇴', genre: 'Electronic' },
+      'Off Radio': { country: 'Greece', flag: '🇬🇷', genre: 'Lounge' },
+      'Capital FM': { country: 'UK', flag: '🇬🇧', genre: 'Chart' },
+      'Vanilla Smooth Radio': { country: 'Greece', flag: '🇬🇷', genre: 'Smooth' },
+      'Vanilla Deep Radio': { country: 'Greece', flag: '🇬🇷', genre: 'Deep House' },
+      'ManCode Radio': { country: 'Greece', flag: '🇬🇷', genre: 'Variety' },
+      'Europa FM': { country: 'Romania', flag: '🇷🇴', genre: 'Mainstream' },
+      'MC2': { country: 'Italy', flag: '🇮🇹', genre: 'Variety' },
+      'Antenne Bayern': { country: 'Germany', flag: '🇩🇪', genre: 'Variety' }
+    };
 
     function syncThemeIcon() {
       themeToggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☾' : '☀';
@@ -644,13 +684,28 @@
         controlsRow.style.display = 'none';
         currentStation.textContent = '';
         statusText.textContent = '';
+        stationCountry.textContent = '';
+        stationGenre.textContent = '';
+        stationDetails.style.display = 'none';
         updatePresetStates();
         return;
       }
 
+      const meta = stationMeta[station];
       currentStation.textContent = station;
       nowPlayingCard.style.display = 'block';
       controlsRow.style.display = 'flex';
+
+      if (meta) {
+        stationCountry.textContent = `${meta.flag} ${meta.country}`;
+        stationGenre.textContent = meta.genre;
+        stationDetails.style.display = 'flex';
+      } else {
+        stationCountry.textContent = '';
+        stationGenre.textContent = '';
+        stationDetails.style.display = 'none';
+      }
+
       updatePresetStates();
     }
 
