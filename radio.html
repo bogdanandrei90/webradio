@@ -517,6 +517,7 @@
             <span class="pill">Ready</span>
           </button>
 
+          <!-- http-only stream: routed through STREAM_PROXY automatically when the page is on https -->
           <button class="preset" type="button" data-station="Stella FM" data-url="http://onair11.xdevel.com:8108/;">
             <span class="preset-main">
               <span class="preset-icon">♫</span>
@@ -635,6 +636,19 @@
   <audio id="audio"></audio>
 
   <script>
+    // HTTPS relay for http-only streams (see radio-proxy-worker.js).
+    // Replace with your deployed Cloudflare Worker URL, keeping "/?url=" at the end.
+    const STREAM_PROXY = 'https://radio-proxy.YOUR-SUBDOMAIN.workers.dev/?url=';
+
+    // Browsers block (or force-upgrade) http:// audio on an https:// page,
+    // so http streams are sent through the HTTPS proxy instead.
+    function resolveStreamUrl(url) {
+      if (location.protocol === 'https:' && url.startsWith('http://')) {
+        return STREAM_PROXY + encodeURIComponent(url);
+      }
+      return url;
+    }
+
     const root = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
     const volumeSlider = document.getElementById('volumeSlider');
@@ -655,6 +669,7 @@
 
     const stationMeta = {
       'MegaStar FM': { country: 'Spain', flag: '🇪🇸', genre: 'Pop' },
+      'Stella FM': { country: 'Italy', flag: '🇮🇹', genre: 'Pop' },
       'Dance FM': { country: 'Romania', flag: '🇷🇴', genre: 'Electronic' },
       'Off Radio': { country: 'Greece', flag: '🇬🇷', genre: 'Lounge' },
       'Capital FM': { country: 'UK', flag: '🇬🇧', genre: 'Chart' },
@@ -728,8 +743,9 @@
 
       currentStreamUrl = url;
 
-      if (audio.src !== url) {
-        audio.src = url;
+      const src = resolveStreamUrl(url);
+      if (audio.src !== src) {
+        audio.src = src;
       }
 
       const selectedStation = currentStation.textContent || 'Selected station';
@@ -754,9 +770,9 @@
         return;
       }
 
-      const url = currentStreamUrl;
+      const src = resolveStreamUrl(currentStreamUrl);
       setStatus('Refreshing stream…');
-      audio.src = url;
+      audio.src = src;
       audio.load();
       audio.play().catch(() => {
         setStatus(`Unable to refresh ${currentStation.textContent}`);
