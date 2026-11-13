@@ -1,64 +1,90 @@
-# 🎧 Web Radio App
+# Web Radio
 
-A lightweight, installable web radio player that lets you stream any radio station and quickly switch between curated presets. Features a clean interface with Day/Night mode for comfortable listening anytime.
+A lightweight, single-page internet radio player. Pick a station from the presets and it starts streaming right away. It is built with plain HTML, CSS and JavaScript (no frameworks, no build step) and can be installed as a PWA.
 
-<img width="468" alt="Web Radio App Screenshot" src="https://github.com/user-attachments/assets/47873fc2-d2c8-4851-984a-d43bee4ccc36" />
+Live demo: https://bogdanandrei90.github.io/webradio/radio.html
 
-##  Features
+## Features
 
--  Play /  Pause — Control live radio streams
--  Custom URLs — Paste any radio stream URL
--  Volume Control — Adjust playback volume
--  Quick Presets — One-tap station switching
--   Day/Night Mode — Auto-detect based on time or manual toggle
--  Elapsed Time — Track how long you've been listening
--  Genre Labels — See what type of music each station plays
--  Animated Equalizer — Visual feedback when streaming
--  Installable PWA — Add to home screen on iOS/Android
--  No App Store — Direct install from browser
--  Fast & Lightweight — No tracking, no bloat
+- **One-tap presets**: a curated list of stations; each card shows a `Ready` / `Live` status pill.
+- **Now Playing card**: appears when a station is selected, showing the station name, live status (Buffering, Live stream active, Paused) and country/genre chips.
+- **Playback controls**: Play/Pause and Refresh buttons (Refresh reconnects a stalled stream).
+- **Volume control**: slider with a percentage readout (default 68%).
+- **Dark / light theme**: toggle in the top-right corner, dark by default.
+- **Responsive layout**: two-column player on desktop, stacked layout on tablets and phones.
+- **Installable PWA**: web app manifest, iOS home-screen meta tags and a service worker that caches the app shell for offline loading.
 
-##  Included Presets
+## Stations
 
-- 🇪🇸 **MegaStar FM** — Pop
-- 🇷🇴 **Dance FM** — Dance
-- 🇬🇷 **Off Radio** — Alternative
-- 🇬🇧 **Capital FM** — Pop
-- 🇬🇷 **Smooth Radio** — Smooth
-- 🇬🇷 **Vanilla Radio** — Deep House
-- 🇩🇪 **Antenne Bayern** — Variety
+| Station | Country | Genre |
+|---|---|---|
+| MegaStar FM | Spain | Pop |
+| Stella FM | Italy | Pop |
+| Dance FM | Romania | Electronic |
+| Off Radio | Greece | Lounge |
+| Capital FM | UK | Chart |
+| Vanilla Smooth Radio | Greece | Smooth |
+| Vanilla Deep Radio | Greece | Deep House |
+| ManCode Radio | Greece | Variety |
+| Europa FM | Romania | Mainstream |
+| MC2 | Italy | Variety |
+| Antenne Bayern | Germany | Variety |
 
-##  Install on iPhone
+## Project structure
 
-**No App Store required!**
+```
+webradio/
+├── radio.html      # The app: markup, styles and player logic
+├── sw.js           # Service worker (app-shell caching, streams bypass the cache)
+├── manifest.json   # PWA manifest
+└── favicon.svg     # App icon
+```
 
-1. Open **Safari** on your iPhone
-2. Visit: **[https://bogdanandrei90.github.io/webradio/radio.html](https://bogdanandrei90.github.io/webradio/radio.html)**
-3. Tap the **Share** button (square with arrow)
-4. Select **"Add to Home Screen"**
-5.  The app will now behave like a native application
+## Running locally
 
-##  Usage Tips
+Serve the folder with any static web server, for example:
 
-- Supports most **MP3**, **AAC**, **Icecast**, and **Shoutcast** streams
-- Best experience when **installed to Home Screen**
-- Toggle **Day/Night mode** anytime from the UI
-- **Paste custom stream URLs** for any radio station
-- Works great with **CarPlay** (audio routing)
+```bash
+python3 -m http.server 8000
+```
 
-##  Tech Stack
+Then open http://localhost:8000/radio.html.
 
-- Pure **HTML / CSS / JavaScript**
-- Native browser **Audio API**
-- **PWA** (Progressive Web App) capabilities
-- **Service Worker** for offline support
-- No backend or dependencies required
+Opening the file directly (`file://`) also works, but the service worker is skipped in that case.
 
-##  License
+## Adding a station
 
-MIT — Feel free to use, modify, and share.
+1. Add a preset button to the `#presetList` in `radio.html`:
 
----
+   ```html
+   <button class="preset" type="button" data-station="My Station" data-url="https://example.com/stream.mp3">
+     <span class="preset-main">
+       <span class="preset-icon">&#9835;</span>
+       <span class="preset-copy">
+         <span class="preset-name">My Station</span>
+         <span class="preset-sub">Short description</span>
+       </span>
+     </span>
+     <span class="pill">Ready</span>
+   </button>
+   ```
 
-**Built with ❤️ for radio lovers everywhere**
+2. Optionally add the country and genre chips in the `stationMeta` object in the script:
 
+   ```js
+   'My Station': { country: 'Italy', flag: '<flag emoji>', genre: 'Pop' },
+   ```
+
+### Stream requirements
+
+- **Use an `https://` stream URL.** The app is served over HTTPS (GitHub Pages), so browsers block or force-upgrade `http://` streams, which then fail to play.
+- MP3 and AAC streams play in all modern browsers. HLS (`.m3u8`) streams play natively in Safari (macOS and iOS); other browsers need a library such as hls.js.
+- **To find a station's stream URL**, open its web player with the browser dev tools open, then check the Network tab (filter by Media) or run this in the Console:
+
+  ```js
+  [...document.querySelectorAll('audio,video')].map(e => e.currentSrc || e.src)
+  ```
+
+## Deployment
+
+The app is hosted on GitHub Pages from the `main` branch. After changing `radio.html` or `sw.js`, bump `CACHE_NAME` in `sw.js` (for example `radio-v2` to `radio-v3`) so installed copies pick up the new version, then hard-reload the page.
