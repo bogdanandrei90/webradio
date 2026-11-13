@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+=<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
@@ -36,6 +36,7 @@
       --accent-soft: rgba(93, 167, 255, 0.12);
       --accent-strong: #7fc0ff;
       --success: #4fc36b;
+      --danger: #ff7b7b;
       --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
       --radius-xl: 28px;
       --radius-lg: 22px;
@@ -59,6 +60,7 @@
       --accent-soft: rgba(49, 113, 198, 0.1);
       --accent-strong: #4a85d4;
       --success: #2c9e57;
+      --danger: #c43c3c;
       --shadow: 0 20px 50px rgba(41, 55, 86, 0.12);
     }
 
@@ -85,6 +87,8 @@
     button, input {
       font: inherit;
     }
+
+    [hidden] { display: none !important; }
 
     .app {
       width: min(100%, 760px);
@@ -165,6 +169,22 @@
     .icon-button:hover {
       transform: translateY(-1px);
       border-color: var(--border-strong);
+    }
+
+    .add-button {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--accent-strong);
+      flex-shrink: 0;
+    }
+
+    .add-button[aria-expanded="true"] {
+      border-color: var(--border-strong);
+      background: var(--accent-soft);
+      transform: rotate(45deg);
     }
 
     .label {
@@ -343,9 +363,70 @@
       white-space: nowrap;
     }
 
+    /* Add-preset form */
+    .add-form {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-strong);
+      background: linear-gradient(135deg, var(--accent-soft), rgba(255,255,255,0.01));
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field { display: grid; gap: 6px; }
+    .field-wide { grid-column: 1 / -1; }
+
+    .field .label { margin: 0; }
+
+    .add-form .url-input { padding: 13px 14px; border-radius: var(--radius-sm); }
+
+    .form-error {
+      color: var(--danger);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .add-form .controls { margin-top: 0; }
+
     .preset-list {
       display: grid;
       gap: 8px;
+    }
+
+    /* User-added stations: the preset plus a delete button beside it */
+    .preset-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .preset-row .preset { flex: 1; min-width: 0; }
+
+    .preset-delete {
+      width: 52px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel-2);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+
+    .preset-delete:hover,
+    .preset-delete:focus-visible {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: var(--panel-3);
     }
 
     .preset {
@@ -435,12 +516,14 @@
       .player-grid { grid-template-columns: 1fr; }
       .controls { display: grid; grid-template-columns: 1fr 1fr; }
       .btn { width: 100%; min-width: 0; }
-      .section-head { align-items: flex-start; flex-direction: column; }
+      /* keep the + button on the same row as the "Presets" title */
+      .section-head { align-items: center; }
     }
 
     @media (max-width: 520px) {
       .topbar { align-items: flex-start; }
       .controls { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
       .preset { align-items: flex-start; }
       .preset-main { gap: 8px; }
       .preset-icon { width: 34px; height: 34px; }
@@ -503,7 +586,34 @@
           <div>
             <h2>Presets</h2>
           </div>
+          <button class="icon-button add-button" id="addPresetBtn" type="button" aria-label="Add a radio preset" aria-expanded="false" aria-controls="addPresetForm">+</button>
         </div>
+
+        <form class="add-form" id="addPresetForm" hidden novalidate>
+          <div class="form-grid">
+            <label class="field">
+              <span class="label">Station name *</span>
+              <input class="url-input" id="newName" name="name" type="text" maxlength="60" placeholder="e.g. Kiss FM" required />
+            </label>
+            <label class="field">
+              <span class="label">Genre</span>
+              <input class="url-input" id="newGenre" name="genre" type="text" maxlength="40" placeholder="e.g. Dance" />
+            </label>
+            <label class="field field-wide">
+              <span class="label">Stream URL *</span>
+              <input class="url-input" id="newUrl" name="url" type="url" placeholder="https://…/stream.mp3 or .m3u8" required />
+            </label>
+            <label class="field field-wide">
+              <span class="label">Country</span>
+              <input class="url-input" id="newCountry" name="country" type="text" maxlength="40" placeholder="e.g. Romania" />
+            </label>
+          </div>
+          <p class="form-error" id="formError" role="alert" hidden></p>
+          <div class="controls">
+            <button class="btn btn-primary" type="submit">Save preset</button>
+            <button class="btn btn-secondary" id="cancelAddBtn" type="button">Cancel</button>
+          </div>
+        </form>
 
         <div class="preset-list" id="presetList">
           <button class="preset" type="button" data-station="MegaStar FM" data-url="https://megastar-cope.flumotion.com/playlist.m3u8">
@@ -517,7 +627,7 @@
             <span class="pill">Ready</span>
           </button>
 
-         
+
           <button class="preset" type="button" data-station="m2o FM" data-url="https://streamcdnh17-4c4b867c89244861ac216426883d1ad0.msvdn.net/radiom2o/radiom2o/play1.m3u8">
             <span class="preset-main">
               <span class="preset-icon">♫</span>
@@ -663,7 +773,18 @@
     const playBtn = document.getElementById('playBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const audio = document.getElementById('audio');
-    const presets = Array.from(document.querySelectorAll('.preset'));
+    const presetList = document.getElementById('presetList');
+    const addPresetBtn = document.getElementById('addPresetBtn');
+    const addPresetForm = document.getElementById('addPresetForm');
+    const cancelAddBtn = document.getElementById('cancelAddBtn');
+    const formError = document.getElementById('formError');
+    const newName = document.getElementById('newName');
+    const newUrl = document.getElementById('newUrl');
+    const newCountry = document.getElementById('newCountry');
+    const newGenre = document.getElementById('newGenre');
+
+    // Presets can be added at runtime, so always read the current list from the DOM.
+    const getPresets = () => Array.from(presetList.querySelectorAll('.preset'));
 
     let currentStreamUrl = '';
 
@@ -681,6 +802,111 @@
       'Antenne Bayern': { country: 'Germany', flag: '🇩🇪', genre: 'Variety' }
     };
 
+    // ---- User-added presets (saved in this browser's localStorage) ----
+    const CUSTOM_PRESETS_KEY = 'radioPlayer.customPresets';
+
+    function loadCustomPresets() {
+      try {
+        const list = JSON.parse(localStorage.getItem(CUSTOM_PRESETS_KEY));
+        return Array.isArray(list) ? list.filter((p) => p && p.name && p.url) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCustomPresets(list) {
+      try {
+        localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(list));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Built with textContent (not innerHTML) so user input can't inject markup.
+    function createPresetButton({ name, url, genre }) {
+      const button = document.createElement('button');
+      button.className = 'preset';
+      button.type = 'button';
+      button.dataset.station = name;
+      button.dataset.url = url;
+      button.dataset.custom = 'true';
+
+      const main = document.createElement('span');
+      main.className = 'preset-main';
+
+      const icon = document.createElement('span');
+      icon.className = 'preset-icon';
+      icon.textContent = '♫';
+
+      const copy = document.createElement('span');
+      copy.className = 'preset-copy';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'preset-name';
+      nameEl.textContent = name;
+
+      const sub = document.createElement('span');
+      sub.className = 'preset-sub';
+      sub.textContent = genre || '';
+
+      const pill = document.createElement('span');
+      pill.className = 'pill';
+      pill.textContent = 'Ready';
+
+      copy.append(nameEl, sub);
+      main.append(icon, copy);
+      button.append(main, pill);
+      return button;
+    }
+
+    function addPresetToUI(preset) {
+      if (preset.country || preset.genre) {
+        stationMeta[preset.name] = { country: preset.country || '', flag: '', genre: preset.genre || '' };
+      }
+      const button = createPresetButton(preset);
+
+      // Only user-added stations get a delete button (a sibling, since buttons can't nest).
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+
+      const del = document.createElement('button');
+      del.className = 'preset-delete';
+      del.type = 'button';
+      del.title = 'Delete station';
+      del.setAttribute('aria-label', `Delete ${preset.name}`);
+      del.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>';
+
+      row.append(button, del);
+      presetList.appendChild(row);
+      return button;
+    }
+
+    function deleteCustomPreset(row) {
+      const button = row.querySelector('.preset');
+      const { station, url } = button.dataset;
+      if (!confirm(`Delete "${station}" from your presets?`)) return;
+
+      const remaining = loadCustomPresets().filter((p) => p.url !== url);
+      if (!saveCustomPresets(remaining)) {
+        alert('Could not delete the preset (browser storage is unavailable).');
+        return;
+      }
+
+      // If the deleted station is the selected one, stop it and clear Now playing.
+      if (url === currentStreamUrl) {
+        audio.pause();
+        audio.removeAttribute('src');
+        audio.load();
+        currentStreamUrl = '';
+        showNowPlaying(null);
+        updatePlayButton();
+      }
+
+      delete stationMeta[station];
+      row.remove();
+    }
+
     function syncThemeIcon() {
       themeToggle.textContent = root.getAttribute('data-theme') === 'dark' ? '☾' : '☀';
     }
@@ -695,7 +921,7 @@
     }
 
     function updatePresetStates() {
-      presets.forEach((preset) => {
+      getPresets().forEach((preset) => {
         const badge = preset.querySelector('.pill');
         if (!badge) return;
 
@@ -723,8 +949,11 @@
       controlsRow.style.display = 'flex';
 
       if (meta) {
-        stationCountry.textContent = `${meta.flag} ${meta.country}`;
-        stationGenre.textContent = meta.genre;
+        const countryText = [meta.flag, meta.country].filter(Boolean).join(' ');
+        stationCountry.textContent = countryText;
+        stationCountry.style.display = countryText ? '' : 'none';
+        stationGenre.textContent = meta.genre || '';
+        stationGenre.style.display = meta.genre ? '' : 'none';
         stationDetails.style.display = 'flex';
       } else {
         stationCountry.textContent = '';
@@ -794,19 +1023,117 @@
       audio.volume = value / 100;
     });
 
-    presets.forEach((preset) => {
-      preset.addEventListener('click', () => {
-        presets.forEach((item) => item.classList.remove('active'));
-        preset.classList.add('active');
-        const station = preset.dataset.station;
-        const url = preset.dataset.url;
-        showNowPlaying(station);
-        currentStreamUrl = url;
-        updatePresetStates();
-        setStatus(`Ready to play ${station}`);
-        playRadio(url);
-      });
+    // One delegated listener covers both built-in and user-added presets.
+    presetList.addEventListener('click', (event) => {
+      const deleteBtn = event.target.closest('.preset-delete');
+      if (deleteBtn) {
+        deleteCustomPreset(deleteBtn.closest('.preset-row'));
+        return;
+      }
+
+      const preset = event.target.closest('.preset');
+      if (!preset || !presetList.contains(preset)) return;
+
+      getPresets().forEach((item) => item.classList.remove('active'));
+      preset.classList.add('active');
+      const station = preset.dataset.station;
+      const url = preset.dataset.url;
+      showNowPlaying(station);
+      currentStreamUrl = url;
+      updatePresetStates();
+      setStatus(`Ready to play ${station}`);
+      playRadio(url);
     });
+
+    // ---- Add-preset form ----
+    function showFormError(message) {
+      formError.textContent = message;
+      formError.hidden = !message;
+    }
+
+    function openAddForm() {
+      addPresetForm.hidden = false;
+      addPresetBtn.setAttribute('aria-expanded', 'true');
+      addPresetBtn.setAttribute('aria-label', 'Close add preset form');
+      newName.focus();
+    }
+
+    function closeAddForm() {
+      addPresetForm.reset();
+      showFormError('');
+      addPresetForm.hidden = true;
+      addPresetBtn.setAttribute('aria-expanded', 'false');
+      addPresetBtn.setAttribute('aria-label', 'Add a radio preset');
+    }
+
+    addPresetBtn.addEventListener('click', () => {
+      if (addPresetForm.hidden) {
+        openAddForm();
+      } else {
+        closeAddForm();
+      }
+    });
+
+    cancelAddBtn.addEventListener('click', closeAddForm);
+
+    addPresetForm.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeAddForm();
+    });
+
+    addPresetForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const name = newName.value.trim();
+      const url = newUrl.value.trim();
+      const country = newCountry.value.trim();
+      const genre = newGenre.value.trim();
+
+      if (!name) {
+        showFormError('Please enter a station name.');
+        newName.focus();
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = new URL(url);
+      } catch {
+        parsed = null;
+      }
+      if (!parsed || !['http:', 'https:'].includes(parsed.protocol)) {
+        showFormError('Please enter a valid stream URL starting with http:// or https://');
+        newUrl.focus();
+        return;
+      }
+
+      const existing = getPresets();
+      if (existing.some((p) => p.dataset.station.toLowerCase() === name.toLowerCase())) {
+        showFormError('A preset with this name already exists.');
+        newName.focus();
+        return;
+      }
+      if (existing.some((p) => p.dataset.url === url)) {
+        showFormError('This stream URL is already in your presets.');
+        newUrl.focus();
+        return;
+      }
+
+      const preset = { name, url, country, genre };
+      const custom = loadCustomPresets();
+      custom.push(preset);
+      if (!saveCustomPresets(custom)) {
+        showFormError('Could not save the preset (browser storage is unavailable).');
+        return;
+      }
+
+      const button = addPresetToUI(preset);
+      closeAddForm();
+      button.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      button.focus({ preventScroll: true });
+    });
+
+    // Restore user-added presets at the end of the list.
+    loadCustomPresets().forEach(addPresetToUI);
 
     playBtn.addEventListener('click', () => {
       if (audio.paused || audio.ended) {
